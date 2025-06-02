@@ -1,16 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Plus, Search, Filter, Download, Truck, 
-  Calendar, Droplet, ArrowUpDown, ArrowUp, ArrowDown
+  Calendar, Droplet, ArrowUpDown, ArrowUp, ArrowDown,
+  Loader2
 } from 'lucide-react';
-import { vehicles } from '../utils/data';
+import { fetchVehicles } from '../utils/api';
 import { cn } from '../utils/cn';
 
 const Vehicles = () => {
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState('registrationNumber');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadVehicles();
+  }, []);
+
+  const loadVehicles = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await fetchVehicles();
+      setVehicles(data);
+    } catch (err) {
+      setError('Failed to load vehicles. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
   
   // Handle sort
   const handleSort = (field: string) => {
@@ -32,11 +53,11 @@ const Vehicles = () => {
   const filteredVehicles = vehicles
     .filter(vehicle => {
       const matchesSearch = 
-        vehicle.registrationNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.location.toLowerCase().includes(searchTerm.toLowerCase());
+        vehicle.registrationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vehicle.make?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vehicle.model?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vehicle.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vehicle.location?.toLowerCase().includes(searchTerm.toLowerCase());
         
       const matchesStatus = !statusFilter || vehicle.status === statusFilter;
       
@@ -67,7 +88,7 @@ const Vehicles = () => {
     
   // Get status badge
   const getStatusBadge = (status: string) => {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case 'active':
         return <span className="badge badge-success">Active</span>;
       case 'maintenance':
@@ -80,13 +101,35 @@ const Vehicles = () => {
   };
   
   // Format date
-  const formatDate = (date: Date) => {
+  const formatDate = (date: string | Date) => {
     return new Intl.DateTimeFormat('en-GB', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
-    }).format(date);
+    }).format(new Date(date));
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+        <p className="text-error mb-4">{error}</p>
+        <button 
+          onClick={loadVehicles}
+          className="btn btn-primary"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -220,7 +263,7 @@ const Vehicles = () => {
                   <div className="flex items-center">
                     <div className="h-9 w-9 rounded overflow-hidden mr-3 flex-shrink-0">
                       <img 
-                        src={vehicle.image} 
+                        src={vehicle.image || 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'} 
                         alt={`${vehicle.make} ${vehicle.model}`}
                         className="h-full w-full object-cover"
                       />
@@ -248,7 +291,7 @@ const Vehicles = () => {
                 <td>
                   <div className="flex items-center">
                     <Calendar size={16} className="text-gray-400 mr-2" />
-                    <span>{formatDate(vehicle.lastServiced)}</span>
+                    <span>{vehicle.lastServiced ? formatDate(vehicle.lastServiced) : 'N/A'}</span>
                   </div>
                 </td>
                 <td>
