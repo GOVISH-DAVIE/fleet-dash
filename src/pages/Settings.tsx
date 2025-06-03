@@ -260,7 +260,7 @@ const Settings = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
-                      <input id="companyName" type="text" className="input" defaultValue="Safari Transport Ltd" />
+                      <input id="companyName" type="text" className="input" defaultValue="IE Solutions" />
                     </div>
                     <div>
                       <label htmlFor="taxId" className="block text-sm font-medium text-gray-700 mb-1">Tax ID / Registration Number</label>
@@ -270,7 +270,7 @@ const Settings = () => {
                   
                   <div>
                     <label htmlFor="companyAddress" className="block text-sm font-medium text-gray-700 mb-1">Company Address</label>
-                    <textarea id="companyAddress" className="input" rows={3} defaultValue="456 Kenyatta Avenue, Nairobi, Kenya"></textarea>
+                    <textarea id="companyAddress" className="input" rows={3} defaultValue="47 Shanzu Westlands, Nairobi, Kenya"></textarea>
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -280,11 +280,11 @@ const Settings = () => {
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                      <input id="email" type="email" className="input" defaultValue="info@safaritransport.co.ke" />
+                      <input id="email" type="email" className="input" defaultValue="info@isefleet.co.ke" />
                     </div>
                     <div>
                       <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-1">Website</label>
-                      <input id="website" type="url" className="input" defaultValue="https://safaritransport.co.ke" />
+                      <input id="website" type="url" className="input" defaultValue="https://www.intelligentso.com" />
                     </div>
                   </div>
                 </div>
@@ -297,12 +297,9 @@ const Settings = () => {
                   <div>
                     <p className="text-sm font-medium text-gray-700 mb-2">Company Logo</p>
                     <div className="w-40 h-40 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
-                      <div className="h-8 w-8" dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="24" height="24" rx="4" fill="#056b2f" />
-  <path d="M6 12H18" stroke="white" stroke-width="2" stroke-linecap="round" />
-  <path d="M12 6V18" stroke="white" stroke-width="2" stroke-linecap="round" />
-  <circle cx="12" cy="12" r="4" fill="#ff6347" stroke="white" stroke-width="1" />
-</svg>` }} />
+                      <div className="h-8 w-8"  >
+                        <img src='logo.png'/>
+                      </div>
                     </div>
                     <button className="btn btn-outline mt-2 w-full">Upload Logo</button>
                   </div>
@@ -399,26 +396,10 @@ const Settings = () => {
             </button>
             
             <div className="border-t border-gray-200 my-2 pt-2">
-              <button 
-                className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-md text-gray-600 hover:bg-gray-100 transition-colors"
-              >
-                <Database size={18} />
-                <span>API Access</span>
-              </button>
+            
               
-              <button 
-                className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-md text-gray-600 hover:bg-gray-100 transition-colors"
-              >
-                <CreditCard size={18} />
-                <span>Billing</span>
-              </button>
               
-              <button 
-                className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-md text-gray-600 hover:bg-gray-100 transition-colors"
-              >
-                <MessageSquare size={18} />
-                <span>Support</span>
-              </button>
+              
             </div>
           </nav>
         </div>

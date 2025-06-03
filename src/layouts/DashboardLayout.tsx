@@ -85,8 +85,10 @@ const DashboardLayout = () => {
         {/* Sidebar header */}
         <div className="flex items-center justify-between px-4 h-16 border-b border-gray-200">
           <div className="flex items-center">
-            <div className="h-8 w-8" dangerouslySetInnerHTML={{ __html: logo }} />
-            <span className="ml-2 text-xl font-semibold text-gray-800">Safari Fleet</span>
+            <div className="h-8 w-8"  >
+              <img src='logo.png' />
+            </div>
+            {/* <span className="ml-2 text-xl font-semibold text-gray-800">ISE FLEET</span> */}
           </div>
           <button 
             className="p-1 rounded-md lg:hidden hover:bg-gray-100"
@@ -144,8 +146,8 @@ const DashboardLayout = () => {
               className="w-10 h-10 rounded-full object-cover border-2 border-primary"
             />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-700">James Mwangi</p>
-              <p className="text-xs text-gray-500">Fleet Manager</p>
+              {/* <p className="text-sm font-medium text-gray-700">James Mwangi</p>
+              <p className="text-xs text-gray-500">Fleet Manager</p> */}
             </div>
             <button className="ml-auto p-1 rounded-md hover:bg-gray-100">
               <LogOut size={18} className="text-gray-500" />
