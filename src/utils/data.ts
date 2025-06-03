@@ -265,7 +265,7 @@ export const topRoutesData = (() => {
 })();
 
 // Recent alerts
-export const recentAlerts = [
+export const recentAlerts: Alert[] = [
   {
     id: 1,
     type: 'maintenance',

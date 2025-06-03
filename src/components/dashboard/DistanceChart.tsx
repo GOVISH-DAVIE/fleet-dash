@@ -10,6 +10,7 @@ import {
   Filler,
   Legend
 } from 'chart.js';
+import { useEffect, useState } from 'react';
 
 // Register Chart.js components
 ChartJS.register(
@@ -31,6 +32,44 @@ interface DistanceData {
 interface DistanceChartProps {
   data: DistanceData[];
 }
+
+export const DistanceChartWrapper = () => {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDistanceData = async () => {
+      try {
+        const response = await fetch('https://fleet.intelligentso.com/api/v1/trip/distance');
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data)) {
+          const formatted = result.data.map((item: any) => ({
+            month: item.month,
+            distance: parseFloat(item.distance),
+          }));
+          setChartData(formatted);
+        } else {
+          console.warn('Unexpected API response:', result);
+        }
+      } catch (error) {
+        console.error('Failed to fetch trip distance data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDistanceData();
+  }, []);
+
+  if (loading) return <p>Loading distance data...</p>;
+
+  return (
+    <div className="p-4">
+      <DistanceChart data={chartData} />
+    </div>
+  );
+};
 
 const DistanceChart = ({ data }: DistanceChartProps) => {
   const chartData = {

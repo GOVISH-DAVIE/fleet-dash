@@ -1,5 +1,6 @@
-import { Truck, AlertCircle, Calendar } from 'lucide-react';
+import { Truck, AlertCircle, Calendar, Route } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { useEffect, useState } from 'react';
 
 interface Vehicle {
   id: number;
@@ -17,13 +18,93 @@ interface Vehicle {
 interface VehicleListProps {
   vehicles: Vehicle[];
 }
+interface VehicleApiData {
+  id: number;
+  registrationnumber: string;
+  make: string;
+  model: string;
+  type: string;
+  year: number;
+  status: string;
+  fuellevel: number;
+  fuelefficiency: number;
+  mileage: number;
+  location: string;
+  assigneddriver: string;
+  lastserviced: string;
+  nextservice: string;
+  lastinspection: string;
+  image: string;
+  tripCount: number;
+}
+
+interface Vehicle {
+  id: number;
+  registrationNumber: string;
+  make: string;
+  model: string;
+  status: string;
+  fuelLevel: number;
+  lastServiced: Date;
+  nextService: Date;
+  mileage: number;
+  image: string;
+  tripCount?: number;
+}
+
+interface VehicleListProps {
+  vehicles: Vehicle[];
+}
+
+export const VehicleListWrapper = () => {
+  const [vehicles, setVehicles] = useState<VehicleApiData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadVehicles = async () => {
+      try {
+        const res = await fetch('https://fleet.intelligentso.com/api/v1/vehicle/activity');
+        const json = await res.json();
+
+        if (json.success && Array.isArray(json.data)) {
+          // Convert date strings to Date objects for the VehicleList
+          const formatted = json.data.map((v: VehicleApiData) => ({
+            id: v.id,
+            registrationNumber: v.registrationnumber,
+            make: v.make,
+            model: v.model,
+            status: v.status,
+            fuelLevel: v.fuellevel,
+            lastServiced: new Date(v.lastserviced),
+            nextService: new Date(v.nextservice),
+            mileage: v.mileage,
+            image: v.image,
+          }));
+          setVehicles(formatted);
+        }
+      } catch (error) {
+        console.error('Failed to load vehicles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadVehicles();
+  }, []);
+
+  if (loading) return <p className="p-4">Loading vehicles...</p>;
+
+  return <VehicleList vehicles={vehicles} />;
+};
 
 const VehicleList = ({ vehicles }: VehicleListProps) => {
   const getStatusBadge = (status: string) => {
-    switch (status) {
+    const normalized = status.toLowerCase();
+    switch (normalized) {
       case 'active':
         return <span className="badge badge-success">Active</span>;
       case 'maintenance':
+      case 'under maintenance':
         return <span className="badge badge-warning">Maintenance</span>;
       case 'inactive':
         return <span className="badge badge-error">Inactive</span>;
@@ -32,7 +113,6 @@ const VehicleList = ({ vehicles }: VehicleListProps) => {
     }
   };
 
-  // Format date
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-GB', {
       day: '2-digit',
@@ -78,6 +158,12 @@ const VehicleList = ({ vehicles }: VehicleListProps) => {
                   <div className="flex items-center">
                     <h4 className="text-sm font-semibold text-gray-800">{vehicle.registrationNumber}</h4>
                     <div className="mx-2">{getStatusBadge(vehicle.status)}</div>
+                    {vehicle.tripCount !== undefined && (
+                      <div className="ml-1 badge badge-info text-xs">
+                        <Route size={12} className="mr-1" />
+                        {vehicle.tripCount} trips
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center">
                     <span className="text-xs font-medium text-gray-500 mr-2">Fuel:</span>
@@ -120,5 +206,4 @@ const VehicleList = ({ vehicles }: VehicleListProps) => {
     </div>
   );
 };
-
 export default VehicleList;

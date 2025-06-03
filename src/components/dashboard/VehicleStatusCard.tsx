@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, Circle } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -8,6 +8,45 @@ interface VehicleStatusCardProps {
   inactive: number;
   total: number;
 }
+
+export const VehicleStatusCardWrapper = () => {
+  const [statusData, setStatusData] = useState({
+    active: 0,
+    maintenance: 0,
+    inactive: 0,
+    total: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVehicleStatus = async () => {
+      try {
+        const res = await fetch('https://fleet.intelligentso.com/api/v1/vehicle/status');
+        const json = await res.json();
+
+        if (json.success && json.data) {
+          setStatusData({
+            active: json.data.active,
+            maintenance: json.data.maintenance,
+            inactive: json.data.inactive,
+            total: json.data.total,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch vehicle status:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVehicleStatus();
+  }, []);
+
+  if (loading) return <p className="p-4 text-sm text-gray-500">Loading vehicle status...</p>;
+
+  return <VehicleStatusCard {...statusData} />;
+};
+
 
 const VehicleStatusCard = ({ active, maintenance, inactive, total }: VehicleStatusCardProps) => {
   const [showDetails, setShowDetails] = useState(false);

@@ -1,4 +1,5 @@
 import { MapPin } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface RouteData {
   route: string;
@@ -8,6 +9,35 @@ interface RouteData {
 interface TopRoutesCardProps {
   routes: RouteData[];
 }
+export const TopRoutesSection = () => {
+  const [routes, setRoutes] = useState<RouteData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTopRoutes = async () => {
+      try {
+        const response = await fetch('https://fleet.intelligentso.com/api/v1/trip/top-routes');
+        const result = await response.json();
+
+        if (result.success) {
+          setRoutes(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch top routes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopRoutes();
+  }, []);
+
+  if (loading) {
+    return <div className="dashboard-card p-4">Loading top routes...</div>;
+  }
+
+  return <TopRoutesCard routes={routes} />;
+};
 
 const TopRoutesCard = ({ routes }: TopRoutesCardProps) => {
   // Find the maximum count to calculate percentages

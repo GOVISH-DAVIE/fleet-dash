@@ -73,10 +73,7 @@ const RecentAlertsCard = ({ alerts }: RecentAlertsCardProps) => {
             </div>
           ))}
         </div>
-        
-        <button className="w-full mt-3 text-sm text-center text-primary font-medium hover:underline">
-          View All Alerts
-        </button>
+       
       </div>
     </div>
   );

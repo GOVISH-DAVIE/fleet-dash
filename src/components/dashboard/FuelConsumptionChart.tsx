@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { useEffect, useState } from 'react';
 
 // Register Chart.js components
 ChartJS.register(
@@ -27,7 +28,43 @@ interface FuelData {
 interface FuelConsumptionChartProps {
   data: FuelData[];
 }
+export const FuelChartWrapper = () => {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchFuelData = async () => {
+      try {
+        const response = await fetch('https://fleet.intelligentso.com/api/v1/fuelRecord/fuelconsumption');
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data)) {
+          const formattedData = result.data.map((item: any) => ({
+            month: item.month,                     // should be like "Jan", "Feb", etc.
+            consumption: parseFloat(item.consumption), // assuming `consumption` is the field in liters
+          }));
+          setChartData(formattedData);
+        } else {
+          console.warn('Unexpected API response:', result);
+        }
+      } catch (error) {
+        console.error('Failed to fetch fuel data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFuelData();
+  }, []);
+
+  if (loading) return <p>Loading fuel data...</p>;
+
+  return (
+    <div className="p-4">
+      <FuelConsumptionChart data={chartData} />
+    </div>
+  );
+};
 const FuelConsumptionChart = ({ data }: FuelConsumptionChartProps) => {
   const chartData = {
     labels: data.map(item => item.month),
