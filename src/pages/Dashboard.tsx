@@ -1,21 +1,16 @@
-
-import StatsCard from '../components/dashboard/StatsCard';
-import VehicleStatusCard, { VehicleStatusCardWrapper } from '../components/dashboard/VehicleStatusCard';
-import RecentAlertsCard, { Alert } from '../components/dashboard/RecentAlertsCard';
-import FuelConsumptionChart, { FuelChartWrapper } from '../components/dashboard/FuelConsumptionChart';
-import DistanceChart, { DistanceChartWrapper } from '../components/dashboard/DistanceChart';
-import VehicleList, { VehicleListWrapper } from '../components/dashboard/VehicleList';
-import TopRoutesCard, { TopRoutesSection } from '../components/dashboard/TopRoutesCard';
-import MaintenanceScheduleCard from '../components/dashboard/MaintenanceScheduleCard';
-
-import {
-  dashboardStats, vehicles, recentAlerts,
-  monthlyFuelData, monthlyDistanceData, topRoutesData,
-  maintenanceRecords
-} from '../utils/data';
-import { ActiveDriver, MonthlyCompletedTrips, MonthlyFuelRecord, TotalVehicles } from '../components/dashcomp';
+import React, { Suspense, lazy } from 'react';
 import { AlertCircle, BarChart4, Calendar } from 'lucide-react';
+import { ActiveDriver, MonthlyCompletedTrips, MonthlyFuelRecord, TotalVehicles } from '../components/dashcomp';
+import RecentAlertsCard from '../components/dashboard/RecentAlertsCard';
+import { dashboardStats, recentAlerts } from '../utils/data';
 
+// ✅ Lazy-loaded components
+const VehicleStatusCardWrapper = lazy(() => import('../components/dashboard/VehicleStatusCard').then(mod => ({ default: mod.VehicleStatusCardWrapper })));
+const FuelChartWrapper = lazy(() => import('../components/dashboard/FuelConsumptionChart').then(mod => ({ default: mod.FuelChartWrapper })));
+const DistanceChartWrapper = lazy(() => import('../components/dashboard/DistanceChart').then(mod => ({ default: mod.DistanceChartWrapper })));
+const VehicleListWrapper = lazy(() => import('../components/dashboard/VehicleList').then(mod => ({ default: mod.VehicleListWrapper })));
+const MaintenanceScheduleCard = lazy(() => import('../components/dashboard/MaintenanceScheduleCard'));
+const TopRoutesSection = lazy(() => import('../components/dashboard/TopRoutesCard').then(mod => ({ default: mod.TopRoutesSection })));
 
 const Dashboard = () => {
   return (
@@ -30,30 +25,42 @@ const Dashboard = () => {
         <TotalVehicles />
         <ActiveDriver />
         <MonthlyFuelRecord />
-        <MonthlyCompletedTrips
-        />
+        <MonthlyCompletedTrips />
       </div>
 
       {/* Charts and stats */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <DistanceChartWrapper   />
-        <FuelChartWrapper  />
+        <Suspense fallback={<div className="dashboard-card p-4">Loading Distance Chart...</div>}>
+          <DistanceChartWrapper />
+        </Suspense>
+        <Suspense fallback={<div className="dashboard-card p-4">Loading Fuel Chart...</div>}>
+          <FuelChartWrapper />
+        </Suspense>
       </div>
 
       {/* Vehicle list */}
-      <VehicleListWrapper />
+      <Suspense fallback={<div className="dashboard-card p-4">Loading Vehicle List...</div>}>
+        <VehicleListWrapper />
+      </Suspense>
 
       {/* Status, alerts, and maintenance */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <VehicleStatusCardWrapper 
-        />
+        <Suspense fallback={<div className="dashboard-card p-4">Loading Vehicle Status...</div>}>
+          <VehicleStatusCardWrapper />
+        </Suspense>
+
         <RecentAlertsCard alerts={recentAlerts} />
-        <MaintenanceScheduleCard   />
+
+        <Suspense fallback={<div className="dashboard-card p-4">Loading Maintenance...</div>}>
+          <MaintenanceScheduleCard />
+        </Suspense>
       </div>
 
       {/* Bottom row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TopRoutesSection   />
+        <Suspense fallback={<div className="dashboard-card p-4">Loading Top Routes...</div>}>
+          <TopRoutesSection />
+        </Suspense>
 
         <div className="dashboard-card border-l-accent">
           <div className="p-4">
